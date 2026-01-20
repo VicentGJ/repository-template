@@ -1,0 +1,29 @@
+{
+  "name": "@repo/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "eslint",
+    "prettier",
+    "tsconfig"
+  ],
+  "exports": {
+    "./eslint/base": "./eslint/base.js",
+    "./eslint/nest": "./eslint/nest.js",
+    "./eslint/next": "./eslint/next.js",
+    "./prettier/base": "./prettier/base.cjs",
+    "./tsconfig/base.json": "./tsconfig/base.json"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "16.1.4",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^16.0.0",
+    "typescript-eslint": "^8.20.0"
+  }
+}
