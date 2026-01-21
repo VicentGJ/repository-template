@@ -33,6 +33,6 @@ export type MetricsTrendResponse = {
 };
 
 export type MetricsHealthResponse = {
-  ok: true;
+  ok: boolean;
   timestamp: string;
 };
