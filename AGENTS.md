@@ -53,6 +53,7 @@ pnpm build                        # Build for production
 pnpm start                        # Start production server
 pnpm lint                         # Lint source files
 pnpm lint:fix                     # Auto-fix lint issues
+pnpm test                         # Run tests with Vitest
 ```
 
 ### Shared Types (packages/types)
@@ -161,10 +162,14 @@ Apps extend these configs in their own `eslint.config.mjs` and `tsconfig.json`.
 
 ## Testing
 
-- Jest is configured in `apps/api/package.json`
-- Test files use `.spec.ts` suffix
-- E2E tests use `.e2e-spec.ts` suffix in `test/` directory
-- Next.js has no tests configured by default (prints a message)
+- **API (NestJS)**: Jest configured in `apps/api/package.json`
+  - Test files use `.spec.ts` suffix
+  - E2E tests use `.e2e-spec.ts` suffix in `test/` directory
+- **Web (Next.js)**: Vitest configured in `apps/web/vitest.config.ts`
+  - Test files use `.spec.tsx` suffix
+  - Uses React Testing Library with jsdom
+  - Next.js mocks in `apps/web/setup-vitest.tsx`
+- **Lint-staged config**: Defined per-workspace in each `package.json` under `"lint-staged"`
 
 ## Other Notes
 
