@@ -8,6 +8,9 @@
     "test": {
       "outputs": []
     },
+    "typecheck": {
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
