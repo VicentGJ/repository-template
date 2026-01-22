@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchMetricsHealth, fetchMetricsSummary, fetchMetricsTrends } from '@/lib/metrics';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ApiPage() {
   const [summary, trends, health] = await Promise.all([
     fetchMetricsSummary(),

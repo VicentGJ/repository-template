@@ -15,6 +15,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchMetricsHealth, fetchMetricsSummary, fetchMetricsTrends } from '@/lib/metrics';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const [summary, trends, health] = await Promise.all([
     fetchMetricsSummary(),
