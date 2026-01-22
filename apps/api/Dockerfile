@@ -4,7 +4,7 @@ WORKDIR /repo
 ENV HUSKY=0
 ENV CI=true
 
-RUN corepack enable
+RUN npm install -g pnpm
 
 COPY . .
 
