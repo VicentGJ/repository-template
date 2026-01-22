@@ -1,64 +1,83 @@
-# Welcome to your Expo app 👋
+# Native
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo React Native app with file-based routing, currently a scaffold for future mobile development.
 
-## Get started
+> **Status**: Experimental — not yet integrated into CI/CD pipeline
 
-1. Install dependencies from the repo root
-
-   ```bash
-   pnpm install
-   ```
-
-2. Start the API (serves `http://localhost:8000`)
-
-   ```bash
-   pnpm --filter api start:dev
-   ```
-
-3. Start the Expo app
-
-   ```bash
-   pnpm --filter native start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## API configuration
-
-The home screen calls `GET /metrics/summary` on the NestJS API. Configure the base URL with:
-
-```
-EXPO_PUBLIC_API_URL=http://localhost:8000
-```
-
-## Get a fresh project
-
-When you're ready, run:
+## Quick Start
 
 ```bash
-npm run reset-project
+# From monorepo root
+pnpm install
+pnpm --filter native start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then open with:
+- [Expo Go](https://expo.dev/go) on your device
+- Android emulator (`a` in terminal)
+- iOS simulator (`i` in terminal)
 
-## Learn more
+## Project Structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+app/
+├── _layout.tsx         # Root layout
+└── (tabs)/
+    ├── _layout.tsx     # Tab navigation layout
+    └── index.tsx       # Home screen
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+components/
+├── ui/                 # Reusable UI primitives
+│   ├── collapsible.tsx
+│   └── icon-symbol.tsx
+├── themed-text.tsx     # Theme-aware Text
+├── themed-view.tsx     # Theme-aware View
+└── parallax-scroll-view.tsx
 
-## Join the community
+constants/
+└── theme.ts            # Color definitions
 
-Join our community of developers creating universal apps.
+hooks/
+├── use-color-scheme.ts # System theme detection
+└── use-theme-color.ts  # Theme color accessor
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Commands
+
+| Command           | Description                     |
+|-------------------|---------------------------------|
+| `pnpm start`      | Start Expo dev server           |
+| `pnpm android`    | Start on Android emulator       |
+| `pnpm ios`        | Start on iOS simulator          |
+| `pnpm web`        | Start web version               |
+| `pnpm lint`       | Lint with Expo ESLint config    |
+
+## Configuration
+
+### Environment Variables
+
+| Variable              | Default                 | Description     |
+|-----------------------|-------------------------|-----------------|
+| `EXPO_PUBLIC_API_URL` | `http://localhost:8000` | Backend API URL |
+
+### App Configuration
+
+See `app.json` for Expo settings:
+- New Architecture enabled
+- Typed routes enabled
+- React Compiler enabled
+- iOS tablet support
+- Android adaptive icons
+
+## Tech Stack
+
+| Technology       | Version  |
+|------------------|----------|
+| Expo             | 54       |
+| React Native     | 0.81     |
+| React            | 19       |
+| Expo Router      | 6        |
+
+## Notes
+
+This app is not included in the monorepo's Turborepo pipeline (`turbo.json`) since Expo has its own build system. Run commands directly with `pnpm --filter native <script>`.
