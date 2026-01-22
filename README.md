@@ -1,4 +1,6 @@
-# Metrics Dashboard
+# Monorepo Skeleton
+
+> 🌐 **[Versión en Español](README.es.md)**
 
 Production-ready monorepo with a NestJS API and Next.js frontend, configured with CI/CD, quality gates, and shared tooling.
 

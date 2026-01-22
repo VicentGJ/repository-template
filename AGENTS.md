@@ -1,9 +1,7 @@
 # AGENTS.md - Repository Guidelines
-
-This document provides guidelines for AI agents working in this monorepo.
+Guidance for agentic coding tools working in this monorepo.
 
 ## Repository Structure
-
 ```
 /
 ├── apps/
@@ -15,164 +13,131 @@ This document provides guidelines for AI agents working in this monorepo.
 └── turbo.json        # Turborepo pipeline configuration
 ```
 
-## Build, Lint, and Test Commands
-
-### Root Commands (runs across all packages)
-
+## Build, Lint, Test Commands
+### Root (runs across workspaces)
 ```bash
-pnpm install          # Install dependencies
-pnpm dev              # Run all apps in dev mode with hot reload
-pnpm build            # Build all apps
-pnpm lint             # Lint all apps
-pnpm test             # Run tests across all apps
-pnpm format           # Format all files with Prettier
+pnpm install
+pnpm dev
+pnpm build
+pnpm lint
+pnpm test
+pnpm typecheck
+pnpm format
 ```
 
-### API (NestJS) Commands
-
+### API (NestJS) `apps/api`
 ```bash
-cd apps/api
-pnpm build                        # Build NestJS app
-pnpm start                        # Start production server
-pnpm start:dev                    # Start with hot reload
-pnpm lint                         # Lint source files
-pnpm test                         # Run unit tests
-pnpm test:watch                   # Run tests in watch mode
-pnpm test:cov                     # Run tests with coverage
-pnpm test:e2e                     # Run e2e tests
-# Run a single test file
+pnpm build
+pnpm start
+pnpm start:dev
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:watch
+pnpm test:cov
+pnpm test:e2e
+pnpm test:debug
+
+# Single test file
 pnpm test -- --testPathPattern=metrics.service.spec.ts
+
+# Single test by name
+pnpm test -- -t "should create user"
 ```
 
-### Web (Next.js) Commands
-
+### Web (Next.js) `apps/web`
 ```bash
-cd apps/web
-pnpm dev                          # Start dev server
-pnpm build                        # Build for production
-pnpm start                        # Start production server
-pnpm lint                         # Lint source files
-pnpm lint:fix                     # Auto-fix lint issues
-pnpm test                         # Run tests with Vitest
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+pnpm lint:fix
+pnpm typecheck
+pnpm test
+
+# Single test file
+pnpm test -- src/components/example.spec.tsx
+
+# Single test by name
+pnpm test -- -t "renders header"
 ```
 
-### Shared Types (packages/types)
-
+### Shared Types `packages/types`
 ```bash
-cd packages/types
-pnpm lint --filter @repo/types    # Lint shared types if needed
+pnpm lint --filter @repo/types
 ```
 
 ## Code Style Guidelines
-
 ### TypeScript
-
-- Use strict mode (configured in `packages/config/tsconfig/base.json`)
-- Enable `noUncheckedIndexedAccess` for safer array/object access
-- Avoid `any`; use `unknown` or specific types instead
-- Use explicit return types for functions exported from modules
-- Use `void` for async functions called at top level (e.g., `void bootstrap()`)
-- Keep shared API contracts in `packages/types`
+- Base config is strict with `noUncheckedIndexedAccess`.
+- Prefer explicit types at module boundaries and exported functions.
+- Avoid `any`; use `unknown` or precise types. API `noImplicitAny` is false, but still prefer explicit typing.
+- Keep shared API contracts in `packages/types` and import via `@repo/types`.
+- Use `void` for intentional fire-and-forget async calls.
 
 ### Imports
-
 - Use workspace imports for shared packages:
-  ```typescript
+  ```ts
   import type { MetricsSummaryResponse } from '@repo/types';
   ```
-- Use relative imports within the same app:
-  ```typescript
-  import { AppService } from './app.service';
-  ```
-- Use Next.js path alias `@/*` in the web app
+- Use relative imports within the same app.
+- Web app supports `@/*` path alias (from `apps/web/tsconfig.json`).
+- Prefer `import type` for type-only imports.
+
+### Formatting
+- Prettier config in `packages/config/prettier/base.cjs`.
+- Single quotes, trailing commas, print width 100.
+- Run `pnpm format` at repo root when applying broad formatting.
 
 ### Naming Conventions
-
-- **Files**: kebab-case for non-components (e.g., `metrics-service.ts`), PascalCase for components/classes (e.g., `UserController.ts`)
-- **Classes/Interfaces**: PascalCase (e.g., `AppController`, `MetricsService`)
-- **Variables/Functions**: camelCase (e.g., `getMetrics()`)
-- **Constants**: SCREAMING_SNAKE_CASE (e.g., `DEFAULT_PORT`)
-- **Interfaces**: Do not prefix with `I` (use `UserService` not `IUserService`)
-
-### Formatting (Prettier)
-
-Prettier is configured in `packages/config/prettier/base.cjs`:
-
-- Single quotes (`'string'`, not `"string"`)
-- Trailing commas enabled
-- Print width: 100
-
-Run `pnpm format` to format all files.
+- Files: kebab-case for utilities, PascalCase for components/classes.
+- Classes/Interfaces/Types: PascalCase; no `I` prefix for interfaces.
+- Variables/Functions: camelCase.
+- Constants: SCREAMING_SNAKE_CASE.
 
 ### Error Handling
+- Throw domain errors from services; map to HTTP responses in controllers.
+- Do not swallow errors; propagate or convert to typed errors.
+- In Next.js, use error boundaries for unexpected UI failures.
 
-- Use typed errors with custom error classes where appropriate
-- Always await promises or use `void` for fire-and-forget calls
-- Let errors propagate in NestJS services; handle at controller level
-- In Next.js, use error boundaries for unexpected errors
+### Testing
+- API Jest tests live in `apps/api/src` with `.spec.ts` suffix.
+- API e2e tests are in `apps/api/test` with `.e2e-spec.ts` suffix.
+- Web Vitest tests use `.spec.tsx` and run in jsdom.
 
-### NestJS Specific
+## App-Specific Practices
+### NestJS (API)
+- Keep controllers thin; business logic lives in services.
+- Use dependency injection for services and providers.
+- Decorators define modules, controllers, and pipes.
+- Keep controller responses typed with `@repo/types`.
 
-- Use decorators for controllers, services, modules, and pipes
-- Follow convention: `UserController`, `UserService`, `UserModule`
-- Place tests alongside source files with `.spec.ts` suffix
-- Keep controller responses typed using `@repo/types`
-- Use dependency injection for all services
+### Next.js + UI (Web)
+- Use App Router (`app/`) and server components by default.
+- Add `'use client'` only when needed.
+- Prefer `next/image` over `<img>`.
+- Use Tailwind utilities and shadcn-style components in `apps/web/components/ui`.
+- Use the `cn` helper from `apps/web/lib/utils.ts` when composing class names.
+- Design tokens live in `apps/web/app/globals.css`.
 
-### Next.js + UI
-
-- Use App Router with `app/` directory structure
-- Use server components by default; opt-in with `'use client'` when needed
-- Use Next.js Image component instead of `<img>`
-- Use Tailwind utility classes and shadcn-style components in `apps/web/components/ui`
-- Use `cn` helper from `apps/web/lib/utils.ts` when composing class names
-- Keep design tokens in `apps/web/app/globals.css`
-
-#### shadcn Button with Icon
-
-When adding an icon to a button, use the icon's `size` prop and let the button's built-in gap handle spacing:
-
-```tsx
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-
-<Button variant="ghost" size="sm" asChild className="-ml-3 mb-2">
-  <Link href="/">
-    <ArrowLeft size={16} />
-  </Link>
-</Button>;
-```
-
-- Do not manually add `mr-2` or similar spacing classes
-- The button's `gap-2` in `buttonVariants` handles icon-text spacing
-- Use `size={16}` for small buttons, `size={20}` for default size
+#### shadcn Button + Icon
+- Use the icon `size` prop and rely on button `gap` for spacing.
+- Do not add manual `mr-*` spacing to icons.
+- Sizes: `size={16}` for `size="sm"`, `size={20}` for default.
 
 ## Shared Configuration
-
-- **ESLint**: `packages/config/eslint/` (base.js, nest.js, next.js)
-- **Prettier**: `packages/config/prettier/base.cjs`
-- **TypeScript**: `packages/config/tsconfig/base.json`
-
-Apps extend these configs in their own `eslint.config.mjs` and `tsconfig.json`.
+- ESLint: `packages/config/eslint/base.js`, `packages/config/eslint/nest.js`, `packages/config/eslint/next.js`
+- Prettier: `packages/config/prettier/base.cjs`
+- TypeScript: `packages/config/tsconfig/base.json`
+Apps extend these configs via their own `eslint.config.mjs` and `tsconfig.json`.
 
 ## Environment Variables
+- `NEXT_PUBLIC_API_URL` controls the web app API base URL (default `http://localhost:3001`).
 
-- `NEXT_PUBLIC_API_URL` controls the web app API base URL (default `http://localhost:3001`)
+## Tooling Notes
+- Package manager: `pnpm` (workspaces in `pnpm-workspace.yaml`).
+- Build orchestration: `turbo` with caching; prefer `pnpm <script>` at root.
+- Lint-staged is configured per workspace in `package.json`.
 
-## Testing
-
-- **API (NestJS)**: Jest configured in `apps/api/package.json`
-  - Test files use `.spec.ts` suffix
-  - E2E tests use `.e2e-spec.ts` suffix in `test/` directory
-- **Web (Next.js)**: Vitest configured in `apps/web/vitest.config.ts`
-  - Test files use `.spec.tsx` suffix
-  - Uses React Testing Library with jsdom
-  - Next.js mocks in `apps/web/setup-vitest.tsx`
-- **Lint-staged config**: Defined per-workspace in each `package.json` under `"lint-staged"`
-
-## Other Notes
-
-- Use pnpm workspaces (managed via `pnpm-workspace.yaml`)
-- Turbo caching is enabled; use `turbo run` for cached builds
-- Run `pnpm install` after adding new dependencies
+## Cursor/Copilot Rules
+- No `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md` present.
