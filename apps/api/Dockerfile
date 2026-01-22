@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /repo
+ENV HUSKY=0
+ENV CI=true
+
+RUN corepack enable
+
+COPY . .
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter api build
+
+WORKDIR /repo/apps/api
+EXPOSE 8000
+
+CMD ["node", "dist/main"]
