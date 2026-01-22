@@ -67,6 +67,8 @@ jobs:
           file: apps/web/Dockerfile
           push: true
           tags: ${{ steps.image.outputs.name }}:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Install Railway CLI
